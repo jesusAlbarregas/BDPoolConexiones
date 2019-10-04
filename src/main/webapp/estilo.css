@@ -1,0 +1,37 @@
+@CHARSET "UTF-8";
+body {
+    font-family: Verdana;
+    font-size: 1.1em;
+}
+div {
+    position: relative;
+    width: 60%;
+    left: 20%;
+    
+}
+div#contenido {
+    border: 1px solid blue;
+}
+div#contenido h2, div#error h2 {
+    color: blue;
+    text-align: center;
+}
+div#contenido table {
+    width: 90%;
+    position: relative;
+    left: 5%;
+    margin: 10px;
+}
+div#error {
+    border: 2px inset red;
+}
+div#error p {
+    font-size: 1.2em;
+    color: red;
+}
+p {
+    text-align: center;
+}
+a {
+    text-decoration: none;
+}
