@@ -1,4 +1,4 @@
-package es.albarregas.persistencia;
+package es.albarregas.controllers;
 
 import es.albarregas.beans.Ave;
 
@@ -11,7 +11,7 @@ import java.sql.ResultSet;
 import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
-import javax.annotation.Resource;
+//import javax.annotation.Resource;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -24,10 +24,9 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-@WebServlet(name = "Acceso", urlPatterns = {"/buscador"})
-public class AccesoBD extends HttpServlet {
+@WebServlet(name = "Buscador", urlPatterns = {"/Buscador"})
+public class Buscador extends HttpServlet {
 
-//    @Resource(name = "java:comp/env/jdbc/Pool")
     DataSource datasource;
 
     @Override
@@ -67,23 +66,28 @@ public class AccesoBD extends HttpServlet {
                     resultado = preparada.executeQuery();
 
                     resultado.next();
-                    url = "unResultado.jsp";
-                    request.setAttribute("anilla", resultado.getString("anilla"));
-                    request.setAttribute("especie", resultado.getString("especie"));
-                    request.setAttribute("lugar", resultado.getString("lugar"));
-                    request.setAttribute("fecha", resultado.getString("fecha"));
+                    url = "/JSP/unResultado.jsp";
+                    ave = new Ave();
+                    ave.setAnilla(resultado.getString("anilla"));
+                    ave.setEspecie(resultado.getString("especie"));
+                    ave.setLugar(resultado.getString("lugar"));
+                    ave.setFecha(resultado.getString("fecha"));
+                    request.setAttribute("ave", ave);
                 } catch (SQLException e) {
 
-                    url = "error.jsp";
-                    request.setAttribute("error", "La anilla " + anilla
+                    url = "/JSP/error.jsp";
+                    request.setAttribute("aviso", "La anilla " + anilla
                             + " no existe en la base de datos");
                 }
             } else {
                 sql = "select * from aves";
                 sentencia = conexion.createStatement();
                 resultado = sentencia.executeQuery(sql);
+
                 listado = new ArrayList();
-                url = "listaResultado.jsp";
+
+                url = "/JSP/listaResultado.jsp";
+
 
                 while (resultado.next()) {
 
@@ -94,28 +98,21 @@ public class AccesoBD extends HttpServlet {
                     ave.setFecha(resultado.getString("fecha"));
                     listado.add(ave);
                 }
-                request.setAttribute("lista", listado);
+                if (!listado.isEmpty()) {
+                    request.setAttribute("lista", listado);
+                } else {
+                    url = "/JSP/error.jsp";
+                    request.setAttribute("aviso", "No existen datos");
+                }
             }
 
             request.getRequestDispatcher(url).forward(request, response);
         } catch (SQLException ex) {
+            
             System.out.println("Error al crear la conexión");
             ex.printStackTrace();
         } finally {
-            try {
-                if (resultado != null) {
-                    resultado.close();
-                }
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
-            try {
-                if (preparada != null) {
-                    preparada.close();
-                }
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
+
             try {
                 if (conexion != null) {
                     conexion.close();
